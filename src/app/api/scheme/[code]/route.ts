@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Define types for the expected API response for better type safety
+// Define types for the expected API response
 interface NavPoint {
   date: string;
   nav: string;
@@ -18,15 +18,12 @@ interface SchemeDetails {
   status: string;
 }
 
-// Context type for dynamic route params
-interface RouteContext {
-  params: {
-    code: string;
-  };
-}
-
-export async function GET(req: NextRequest, context: RouteContext) {
-  const { code } = context.params;
+// ✅ Correct function signature
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { code: string } }
+) {
+  const { code } = params;
 
   if (!code) {
     return NextResponse.json(
