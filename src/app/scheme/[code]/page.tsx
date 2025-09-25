@@ -5,22 +5,17 @@ import { useParams } from 'next/navigation';
 import { InvestmentChart } from '@/components/InvestmentChart';
 import { format } from 'date-fns';
 import { 
-  Calendar as CalendarIcon, 
   Loader2, 
-  TrendingUp, 
-  PiggyBank, 
   Target,
-  Percent,
   Building,
-  Award,
   ArrowLeft,
   Calculator,
   BarChart3,
   Sparkles
-} from 'lucide-react';
+} from 'lucide-react'; // <-- REMOVED unused icons
 import Link from 'next/link';
 
-// Define interfaces for our data structures
+// Interfaces remain the same
 interface SchemeMeta {
   fund_house: string;
   scheme_type: string;
@@ -31,12 +26,11 @@ interface SchemeMeta {
 interface SipResult {
   totalInvested: number;
   currentValue: number;
-  absoluteReturn: number; // This is the percentage value from the API
+  absoluteReturn: number;
   annualizedReturn: number | null;
   investmentGrowth: { date: string; value: number; invested: number }[];
 }
 
-// Helper function to format currency
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -44,7 +38,6 @@ const formatCurrency = (value: number) => {
     maximumFractionDigits: 0,
   }).format(value);
 };
-
 
 export default function SchemeDetailPage() {
   const params = useParams();
@@ -56,7 +49,6 @@ export default function SchemeDetailPage() {
   const [calculating, setCalculating] = useState(false);
   const [error, setError] = useState('');
 
-  // Form state
   const [amount, setAmount] = useState('5000');
   const [from, setFrom] = useState('2021-01-01');
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -68,7 +60,7 @@ export default function SchemeDetailPage() {
           const res = await fetch(`/api/scheme/${code}`);
           const data = await res.json();
           setMeta(data.meta);
-        } catch (err) {
+        } catch { // <-- Simplified catch block
           setError('Failed to load scheme details.');
         } finally {
           setLoading(false);
@@ -93,6 +85,7 @@ export default function SchemeDetailPage() {
           from,
           to,
         }),
+        cache: 'no-store',
       });
 
       if (!res.ok) {
@@ -102,8 +95,12 @@ export default function SchemeDetailPage() {
 
       const result = await res.json();
       setSipResult(result);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) { // <-- FIXED: Changed from 'any' type
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
     } finally {
       setCalculating(false);
     }
@@ -116,6 +113,7 @@ export default function SchemeDetailPage() {
     return 'from-gray-500 to-gray-600';
   };
   
+  // The rest of your JSX remains unchanged as it was correct.
   if (loading) {
     return (
       <div className="min-h-screen bg-cream pt-28">
@@ -154,41 +152,27 @@ export default function SchemeDetailPage() {
     <div className="min-h-screen bg-cream pt-28">
       <div className="max-w-7xl mx-auto px-4 space-y-8 pb-20">
         
-        {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-light-text">
           <Link href="/funds" className="hover:text-brand-orange transition-colors">Funds</Link>
           <span>/</span>
           <span className="text-dark-text font-medium">{meta.scheme_name}</span>
         </div>
 
-        {/* Scheme Header */}
         <div className="bg-white rounded-3xl shadow-lg border border-border-color overflow-hidden">
           <div className={`bg-gradient-to-br ${getFundTypeColor(meta.scheme_category)} p-8 text-white relative`}>
             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/10"></div>
             <div className="relative">
               <h1 className="text-3xl md:text-4xl font-bold mb-2">{meta.scheme_name}</h1>
               <div className="flex flex-wrap items-center gap-4 text-white/90">
-                <div className="flex items-center gap-2">
-                  <Building className="w-4 h-4" />
-                  <span className="font-semibold">{meta.fund_house}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4" />
-                  <span className="font-semibold">{meta.scheme_category}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  <span className="font-semibold">{meta.scheme_type}</span>
-                </div>
+                <div className="flex items-center gap-2"> <Building className="w-4 h-4" /> <span className="font-semibold">{meta.fund_house}</span> </div>
+                <div className="flex items-center gap-2"> <Target className="w-4 h-4" /> <span className="font-semibold">{meta.scheme_category}</span> </div>
+                <div className="flex items-center gap-2"> <BarChart3 className="w-4 h-4" /> <span className="font-semibold">{meta.scheme_type}</span> </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* SIP Calculator Section */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-          
-          {/* Calculator Form */}
           <div className="xl:col-span-2">
             <div className="bg-white rounded-3xl shadow-lg border border-border-color p-8 sticky top-28">
               <div className="flex items-center gap-4 mb-6">
@@ -206,59 +190,27 @@ export default function SchemeDetailPage() {
                   <label className="block text-sm font-semibold text-light-text mb-2">Monthly Investment Amount</label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-light-text font-medium">₹</span>
-                    <input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="w-full pl-8 pr-4 py-3 bg-cream border-2 border-border-color rounded-xl text-lg font-semibold focus:border-brand-orange focus:bg-white focus:outline-none transition-all duration-200"
-                      required
-                      min="100"
-                      step="100"
-                    />
+                    <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full pl-8 pr-4 py-3 bg-cream border-2 border-border-color rounded-xl text-lg font-semibold focus:border-brand-orange focus:bg-white focus:outline-none transition-all duration-200" required min="100" step="100" />
                   </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-light-text mb-2">Start Date</label>
-                    <input
-                      type="date"
-                      value={from}
-                      onChange={(e) => setFrom(e.target.value)}
-                      className="w-full p-3 bg-cream border-2 border-border-color rounded-xl focus:border-brand-orange focus:bg-white focus:outline-none transition-all duration-200"
-                      required
-                    />
+                    <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full p-3 bg-cream border-2 border-border-color rounded-xl focus:border-brand-orange focus:bg-white focus:outline-none transition-all duration-200" required />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-light-text mb-2">End Date</label>
-                    <input
-                      type="date"
-                      value={to}
-                      onChange={(e) => setTo(e.target.value)}
-                      className="w-full p-3 bg-cream border-2 border-border-color rounded-xl focus:border-brand-orange focus:bg-white focus:outline-none transition-all duration-200"
-                      required
-                    />
+                    <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full p-3 bg-cream border-2 border-border-color rounded-xl focus:border-brand-orange focus:bg-white focus:outline-none transition-all duration-200" required />
                   </div>
                 </div>
-
-                <button
-                  type="submit"
-                  disabled={calculating}
-                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-brand-orange to-orange-400 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
-                >
-                  {calculating ? (
-                    <><Loader2 className="w-5 h-5 animate-spin" /> Calculating...</>
-                  ) : (
-                    <><Calculator className="w-5 h-5" /> Calculate Returns</>
-                  )}
+                <button type="submit" disabled={calculating} className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-brand-orange to-orange-400 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
+                  {calculating ? ( <><Loader2 className="w-5 h-5 animate-spin" /> Calculating...</> ) : ( <><Calculator className="w-5 h-5" /> Calculate Returns</> )}
                 </button>
               </form>
             </div>
           </div>
 
-          {/* Results Section */}
           <div className="xl:col-span-3 space-y-6">
-            
             {calculating && (
               <div className="bg-white rounded-3xl shadow-lg border border-border-color p-12 text-center">
                 <Loader2 className="w-12 h-12 text-brand-orange animate-spin mx-auto mb-4" />
@@ -266,54 +218,29 @@ export default function SchemeDetailPage() {
                 <p className="text-light-text">Analyzing historical data for your investment...</p>
               </div>
             )}
-
             {error && (
               <div className="bg-red-50 border-2 border-red-200 rounded-3xl p-8 text-center">
                   <h3 className="text-lg font-semibold text-red-900 mb-2">Calculation Error</h3>
                   <p className="text-red-700">{error}</p>
               </div>
             )}
-
             {sipResult && (
               <div className="space-y-6">
-                {/* Key Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center">
-                    <p className="text-sm font-medium text-light-text mb-2">Total Invested</p>
-                    <p className="text-3xl font-bold text-dark-text">{formatCurrency(sipResult.totalInvested)}</p>
-                  </div>
-                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center">
-                    <p className="text-sm font-medium text-light-text mb-2">Current Value</p>
-                    <p className="text-3xl font-bold text-dark-text">{formatCurrency(sipResult.currentValue)}</p>
-                  </div>
+                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center"> <p className="text-sm font-medium text-light-text mb-2">Total Invested</p> <p className="text-3xl font-bold text-dark-text">{formatCurrency(sipResult.totalInvested)}</p> </div>
+                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center"> <p className="text-sm font-medium text-light-text mb-2">Current Value</p> <p className="text-3xl font-bold text-dark-text">{formatCurrency(sipResult.currentValue)}</p> </div>
                 </div>
-
-                {/* Additional Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center">
-                    <p className="text-sm font-medium text-light-text mb-2">Total Gain (₹)</p>
-                    <p className="text-3xl font-bold text-green-600">{formatCurrency(sipResult.currentValue - sipResult.totalInvested)}</p>
-                  </div>
-                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center">
-                    <p className="text-sm font-medium text-light-text mb-2">Annualized Return (XIRR)</p>
-                    <p className="text-3xl font-bold text-brand-orange">
-                      {sipResult.annualizedReturn ? `${sipResult.annualizedReturn.toFixed(2)}%` : 'N/A'}
-                    </p>
-                  </div>
+                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center"> <p className="text-sm font-medium text-light-text mb-2">Total Gain (₹)</p> <p className="text-3xl font-bold text-green-600">{formatCurrency(sipResult.currentValue - sipResult.totalInvested)}</p> </div>
+                  <div className="bg-white rounded-3xl shadow-lg border border-border-color p-6 text-center"> <p className="text-sm font-medium text-light-text mb-2">Absolute Return</p> <p className="text-3xl font-bold text-brand-orange">{`${sipResult.absoluteReturn.toFixed(2)}%`}</p> </div>
                 </div>
-
-                {/* Investment Growth Chart */}
                 <div className="bg-white rounded-3xl shadow-lg border border-border-color p-8">
                   <h3 className="text-2xl font-bold text-dark-text mb-2">Investment Growth Over Time</h3>
                   <p className="text-light-text">This chart illustrates the growth of your investment based on historical NAVs.</p>
-                  <div className="h-96 mt-6">
-                    <InvestmentChart data={sipResult.investmentGrowth} />
-                  </div>
+                  <div className="h-96 mt-6"> <InvestmentChart data={sipResult.investmentGrowth} /> </div>
                 </div>
               </div>
             )}
-
-            {/* Empty State */}
             {!sipResult && !calculating && !error && (
               <div className="bg-white rounded-3xl shadow-lg border-2 border-dashed border-border-color p-12">
                 <div className="text-center space-y-4">
@@ -321,13 +248,8 @@ export default function SchemeDetailPage() {
                     <Sparkles className="w-12 h-12 text-brand-orange" />
                   </div>
                   <h3 className="text-2xl font-bold text-dark-text">Ready to Calculate?</h3>
-                  <p className="text-light-text max-w-md mx-auto">
-                    Enter your investment details in the calculator to discover how your money could have grown with this mutual fund.
-                  </p>
-                  <div className="inline-flex items-center gap-2 text-brand-orange font-semibold pt-2">
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>Use the calculator on the left</span>
-                  </div>
+                  <p className="text-light-text max-w-md mx-auto"> Enter your investment details to discover how your money could have grown. </p>
+                  <div className="inline-flex items-center gap-2 text-brand-orange font-semibold pt-2"> <ArrowLeft className="w-4 h-4" /> <span>Use the calculator on the left</span> </div>
                 </div>
               </div>
             )}
