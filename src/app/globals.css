@@ -1,0 +1,16 @@
+/* src/app/globals.css */
+@import "tailwindcss";
+
+:root {
+  --cream: #FFF9F0;
+  --brand-orange: #FF7A00;
+  --brand-orange-light: #FFC999;
+  --dark-text: #2D2D2D;
+  --light-text: #5E5E5E;
+  --border-color: #EAEAEA;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--dark-text);
+}
