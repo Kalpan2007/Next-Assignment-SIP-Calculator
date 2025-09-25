@@ -10,11 +10,8 @@ interface NavData {
   nav: string;
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { code: string } }
-) {
-  const { code } = params;
+export async function POST(request: Request, context: any) {
+  const code = context?.params?.code ?? null;
   const { amount, from, to } = await request.json();
 
   // --- BACKEND DEBUG LOG 1 ---

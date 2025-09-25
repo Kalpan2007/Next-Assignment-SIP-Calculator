@@ -19,11 +19,8 @@ interface SchemeDetails {
 }
 
 // ✅ Correct function signature
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { code: string } }
-) {
-  const { code } = params;
+export async function GET(req: NextRequest, context: any) {
+  const code = context?.params?.code ?? req.nextUrl?.searchParams?.get('code') ?? '';
 
   if (!code) {
     return NextResponse.json(

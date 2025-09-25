@@ -58,6 +58,7 @@ interface SipResult {
 interface ChartData {
   name: string;
   value: number;
+  [key: string]: any; // allow extra properties required by recharts' ChartDataInput
 }
 
 const COLORS = ['#FF7A00', '#2D2D2D']; // Orange for wealth gained, Dark Text for invested
