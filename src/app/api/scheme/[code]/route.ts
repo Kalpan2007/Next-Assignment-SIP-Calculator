@@ -1,9 +1,26 @@
-// src/app/api/scheme/[code]/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
+// Define types for the expected API response for better type safety
+interface NavPoint {
+  date: string;
+  nav: string;
+}
+
+interface SchemeDetails {
+  meta: {
+    fund_house: string;
+    scheme_type: string;
+    scheme_category: string;
+    scheme_code: number;
+    scheme_name: string;
+  };
+  data: NavPoint[];
+  status: string;
+}
+
 export async function GET(
-  request: Request,
+  request: NextRequest, // This was the main fix: using NextRequest instead of Request
   { params }: { params: { code: string } }
 ) {
   const { code } = params;
@@ -12,8 +29,7 @@ export async function GET(
   }
 
   try {
-    const response = await axios.get(`https://api.mfapi.in/mf/${code}`);
-    // The API returns an object with metadata and a 'data' array for NAVs
+    const response = await axios.get<SchemeDetails>(`https://api.mfapi.in/mf/${code}`);
     const { meta, data } = response.data;
 
     if (!data || data.length === 0) {
