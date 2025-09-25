@@ -1,11 +1,11 @@
-// src/app/calculator/page.tsx
 'use client';
 
 import { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Calculator as CalculatorIcon, PiggyBank, TrendingUp, RefreshCw, Plus, Minus } from 'lucide-react';
+// Removed PiggyBank and TrendingUp as they are not used on this page
+import { Calculator as CalculatorIcon, RefreshCw, Plus, Minus } from 'lucide-react';
 
-// --- NEW REUSABLE COMPONENT for number inputs with buttons ---
+// --- Reusable component for number inputs with buttons ---
 interface NumberInputProps {
   label: string;
   value: number;
@@ -32,9 +32,9 @@ function NumberInputWithButtons({ label, value, onValueChange, step, min = 0, un
           <Minus className="w-5 h-5" />
         </button>
         <input
-          type="text" // Use text to display formatted value
+          type="text"
           value={`${unit ? unit + ' ' : ''}${value.toLocaleString('en-IN')}`}
-          readOnly // Make it read-only as changes are handled by buttons
+          readOnly
           className="w-full p-3 text-center bg-white border-y border-border-color text-lg font-semibold focus:outline-none"
         />
         <button type="button" onClick={handleIncrement} className="p-3 bg-cream border border-border-color rounded-r-md hover:bg-border-color transition-colors">
@@ -44,17 +44,17 @@ function NumberInputWithButtons({ label, value, onValueChange, step, min = 0, un
     </div>
   );
 }
-// --- END OF NEW COMPONENT ---
+// --- End of reusable component ---
 
 
-// Define the structure for our calculation results
+// Define the structure for calculation results
 interface SipResult {
   futureValue: number;
   totalInvested: number;
   wealthGained: number;
 }
 
-// Define the structure for our chart data
+// Define the structure for chart data
 interface ChartData {
   name: string;
   value: number;
@@ -63,12 +63,10 @@ interface ChartData {
 const COLORS = ['#FF7A00', '#2D2D2D']; // Orange for wealth gained, Dark Text for invested
 
 export default function SipCalculatorPage() {
-  // State for form inputs - UPDATED to use numbers
   const [monthlyInvestment, setMonthlyInvestment] = useState<number>(10000);
   const [investmentPeriod, setInvestmentPeriod] = useState<number>(15);
   const [expectedReturn, setExpectedReturn] = useState<number>(12);
 
-  // State for calculation results and chart
   const [result, setResult] = useState<SipResult | null>(null);
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -82,6 +80,7 @@ export default function SipCalculatorPage() {
     const annualRate = expectedReturn / 100;
     const i = annualRate / 12; // monthly rate of interest
 
+    // Future value of an annuity due (SIP formula)
     const M = P * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
     
     const totalInvested = P * n;
@@ -118,7 +117,7 @@ export default function SipCalculatorPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto py-12">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-dark-text">SIP Calculator</h1>
         <p className="text-lg text-light-text mt-2">Plan your future investments and visualize your wealth growth.</p>
@@ -130,7 +129,6 @@ export default function SipCalculatorPage() {
           <h2 className="text-2xl font-semibold text-dark-text mb-6">Enter Your Investment Details</h2>
           <form onSubmit={handleCalculate} className="space-y-6">
             
-            {/* UPDATED to use the new component */}
             <NumberInputWithButtons
               label="Monthly Investment"
               unit="₹"
@@ -159,7 +157,8 @@ export default function SipCalculatorPage() {
               <button
                 type="submit"
                 disabled={isCalculating}
-                className="w-full flex items-center justify-center gap-2 bg-brand-orange text-brown font-semibold py-3 rounded-md hover:bg-opacity-90 transition-all disabled:bg-brand-orange-light"
+                // FIXED: Changed text-brown to text-white
+                className="w-full flex items-center justify-center gap-2 bg-brand-orange text-white font-semibold py-3 rounded-md hover:bg-opacity-90 transition-all disabled:bg-brand-orange-light"
               >
                 {isCalculating ? 'Calculating...' : 'Calculate'}
               </button>
@@ -174,7 +173,7 @@ export default function SipCalculatorPage() {
           </form>
         </div>
 
-        {/* --- Results Section (No changes here) --- */}
+        {/* --- Results Section --- */}
         <div className="bg-dark-text text-cream p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center">
           {result ? (
             <div className="w-full text-center">
