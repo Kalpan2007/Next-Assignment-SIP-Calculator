@@ -10,7 +10,7 @@
 
 ## 🔗 Live Demo
 
-👉 [View the App Here](https://your-live-url.com)  
+👉 [View the App Here](https://sip-calc-next-assignment.vercel.app/)  
 
 ---
 
