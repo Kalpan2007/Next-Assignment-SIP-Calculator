@@ -1,5 +1,13 @@
 'use client';
 
+
+// What it does: This component's only job is to draw the graph.
+
+// How it works: It is a "presentational" component. It receives the investmentGrowth data array (calculated by our backend) 
+// as a property. It does no calculations. It simply passes this data to the AreaChart component from the Recharts library. 
+// Recharts handles all the complex work of rendering the visual graph.
+
+
 import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 interface ChartData {

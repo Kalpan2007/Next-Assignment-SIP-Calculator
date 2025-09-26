@@ -5,7 +5,7 @@ import axios from 'axios';
 // Simple in-memory cache
 let cachedData: any = null;
 let lastFetchTime: number = 0;
-const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
+const CACHE_TTL = 12 * 60 * 60 * 1000; // this is reset catch data after 12 hours 
 
 export async function GET() {
   const now = Date.now();

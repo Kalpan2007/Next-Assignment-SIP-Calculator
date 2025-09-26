@@ -1,11 +1,11 @@
+// src/app/calculator/page.tsx
 'use client';
 
 import { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-// Removed PiggyBank and TrendingUp as they are not used on this page
 import { Calculator as CalculatorIcon, RefreshCw, Plus, Minus } from 'lucide-react';
 
-// --- Reusable component for number inputs with buttons ---
+// --- Reusable component for number inputs with buttons (EDITABLE) ---
 interface NumberInputProps {
   label: string;
   value: number;
@@ -16,6 +16,8 @@ interface NumberInputProps {
 }
 
 function NumberInputWithButtons({ label, value, onValueChange, step, min = 0, unit }: NumberInputProps) {
+  const [isFocused, setIsFocused] = useState(false);
+
   const handleDecrement = () => {
     onValueChange(Math.max(min, value - step));
   };
@@ -24,20 +26,50 @@ function NumberInputWithButtons({ label, value, onValueChange, step, min = 0, un
     onValueChange(value + step);
   };
 
+  // Handles direct user input in the text field
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    // Remove any non-numeric characters except for a decimal point
+    const numericString = rawValue.replace(/[^0-9.]/g, '');
+    const newValue = parseFloat(numericString);
+
+    // Update state if it's a valid number, or handle empty input as 0
+    if (!isNaN(newValue)) {
+      onValueChange(newValue);
+    } else if (numericString === '') {
+      onValueChange(min); // Default to min value if empty
+    }
+  };
+  
+  // Conditionally format the value for display
+  const displayValue = isFocused 
+    ? value.toString() 
+    : `${unit ? unit + ' ' : ''}${value.toLocaleString('en-IN')}`;
+
   return (
     <div>
       <label className="block text-sm font-medium text-light-text mb-2">{label}</label>
       <div className="flex items-center">
-        <button type="button" onClick={handleDecrement} className="p-3 bg-cream border border-border-color rounded-l-md hover:bg-border-color transition-colors">
+        <button 
+          type="button" 
+          onClick={handleDecrement} 
+          className="p-3 bg-cream border border-border-color rounded-l-md hover:bg-border-color transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+        >
           <Minus className="w-5 h-5" />
         </button>
         <input
-          type="text"
-          value={`${unit ? unit + ' ' : ''}${value.toLocaleString('en-IN')}`}
-          readOnly
-          className="w-full p-3 text-center bg-white border-y border-border-color text-lg font-semibold focus:outline-none"
+          type={isFocused ? "number" : "text"}
+          value={displayValue}
+          onChange={handleInputChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className="w-full p-3 text-center bg-white border-y border-border-color text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:z-10 relative transition-shadow"
         />
-        <button type="button" onClick={handleIncrement} className="p-3 bg-cream border border-border-color rounded-r-md hover:bg-border-color transition-colors">
+        <button 
+          type="button" 
+          onClick={handleIncrement} 
+          className="p-3 bg-cream border border-border-color rounded-r-md hover:bg-border-color transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+        >
           <Plus className="w-5 h-5" />
         </button>
       </div>
@@ -58,10 +90,9 @@ interface SipResult {
 interface ChartData {
   name: string;
   value: number;
-  [key: string]: any; // allow extra properties required by recharts' ChartDataInput
 }
 
-const COLORS = ['#FF7A00', '#2D2D2D']; // Orange for wealth gained, Dark Text for invested
+const COLORS = ['#FF7A00', '#2D2D2D'];
 
 export default function SipCalculatorPage() {
   const [monthlyInvestment, setMonthlyInvestment] = useState<number>(10000);
@@ -77,13 +108,11 @@ export default function SipCalculatorPage() {
     setIsCalculating(true);
 
     const P = monthlyInvestment;
-    const n = investmentPeriod * 12; // total number of months
+    const n = investmentPeriod * 12;
     const annualRate = expectedReturn / 100;
-    const i = annualRate / 12; // monthly rate of interest
+    const i = annualRate / 12;
 
-    // Future value of an annuity due (SIP formula)
     const M = P * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
-    
     const totalInvested = P * n;
     const wealthGained = M - totalInvested;
     
@@ -118,7 +147,7 @@ export default function SipCalculatorPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-12">
+    <div className="max-w-6xl mx-auto py-12 px-4">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-dark-text">SIP Calculator</h1>
         <p className="text-lg text-light-text mt-2">Plan your future investments and visualize your wealth growth.</p>
@@ -158,15 +187,14 @@ export default function SipCalculatorPage() {
               <button
                 type="submit"
                 disabled={isCalculating}
-                // FIXED: Changed text-brown to text-white
-                className="w-full flex items-center justify-center gap-2 bg-brand-orange text-white font-semibold py-3 rounded-md hover:bg-opacity-90 transition-all disabled:bg-brand-orange-light"
+                className="w-full flex items-center justify-center gap-2 bg-orange-500 text-white font-semibold py-3 rounded-md hover:bg-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500"
               >
                 {isCalculating ? 'Calculating...' : 'Calculate'}
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="w-auto p-3 text-light-text hover:text-dark-text hover:bg-black/5 rounded-md transition-colors"
+                className="w-auto p-3 text-light-text hover:text-dark-text hover:bg-black/5 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400"
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
@@ -175,14 +203,14 @@ export default function SipCalculatorPage() {
         </div>
 
         {/* --- Results Section --- */}
-        <div className="bg-dark-text text-cream p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center">
+        <div className="bg-dark-text text-cream p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center min-h-[480px]">
           {result ? (
             <div className="w-full text-center">
               <div className="w-full h-64">
                 <ResponsiveContainer>
                   <PieChart>
                     <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} fill="#8884d8" paddingAngle={5}>
-                      {chartData.map((entry, index) => (
+                      {chartData.map((_entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -198,7 +226,7 @@ export default function SipCalculatorPage() {
                 </div>
                 <div className="flex justify-between items-center bg-cream/10 p-3 rounded-md">
                     <p className="text-cream/80">Wealth Gained:</p>
-                    <p className="font-bold text-lg text-brand-orange-light">{formatCurrency(result.wealthGained)}</p>
+                    <p className="font-bold text-lg" style={{ color: COLORS[0] }}>{formatCurrency(result.wealthGained)}</p>
                 </div>
                 <div className="mt-4 pt-4 border-t border-cream/20 flex justify-between items-center">
                     <p className="text-lg">Future Value:</p>

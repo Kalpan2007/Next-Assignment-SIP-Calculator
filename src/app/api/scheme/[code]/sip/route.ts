@@ -1,3 +1,38 @@
+// File: src/app/api/scheme/[code]/sip/route.ts
+// What it does: This is the most important calculation engine. It calculates the SIP returns for a specific fund based on real historical data.
+
+// How it calculates:
+
+// It receives the schemeCode, amount, from date, and to date from the frontend.
+
+// It fetches the entire NAV history for that fund from the external API.
+
+// It then loops month-by-month from the from date to the to date.
+
+// In each month of the loop, it finds the correct historical NAV for that specific investment date.
+
+// It calculates the number of units purchased (units = amount / NAV).
+
+// It keeps a running total of totalUnits purchased and totalInvested.
+
+// After the loop finishes, it takes the single most recent NAV from the history and calculates the final currentValue (currentValue = totalUnits * latestNAV).
+
+// Finally, it calculates the percentages for absolute and annualized returns and sends the complete results object back to the frontend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { parse, addMonths, startOfDay, format, isBefore } from 'date-fns';
