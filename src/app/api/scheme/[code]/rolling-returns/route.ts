@@ -8,8 +8,8 @@ const findNavForDate = (targetDate: Date, sortedNavs: { dateObj: Date; nav: numb
     return navPoint || null;
 };
 
-export async function GET(request: NextRequest, context: { params: { code: string } }) {
-    const { code } = context.params;
+export async function GET(request: NextRequest, context: any) {
+    const code = context?.params?.code ?? null;
     const { searchParams } = new URL(request.url);
     const window = searchParams.get('window') || '1y'; // e.g., 1y, 3y
     const duration = searchParams.get('duration') || '5y'; // e.g., 3y, 5y, 10y

@@ -12,8 +12,8 @@ const findNavForDate = (targetDate: Date, sortedNavs: { dateObj: Date; nav: numb
   return navPoint ? navPoint.nav : null;
 };
 
-export async function POST(request: NextRequest, context: { params: { code: string } }) {
-  const { code } = context.params;
+export async function POST(request: NextRequest, context: any) {
+  const code = context?.params?.code ?? null;
   const body = await request.json();
   const { amount, from, to } = body;
 

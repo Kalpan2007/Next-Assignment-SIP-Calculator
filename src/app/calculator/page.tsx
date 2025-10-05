@@ -90,6 +90,7 @@ interface SipResult {
 interface ChartData {
   name: string;
   value: number;
+  [key: string]: any;
 }
 
 const COLORS = ['#FF7A00', '#2D2D2D'];

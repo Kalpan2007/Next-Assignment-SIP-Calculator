@@ -7,8 +7,8 @@ const findNavForDate = (targetDate: Date, sortedNavs: { dateObj: Date; nav: numb
     return navPoint ? navPoint.nav : null;
 };
 
-export async function POST(request: NextRequest, context: { params: { code: string } }) {
-  const { code } = context.params;
+export async function POST(request: NextRequest, context: any) {
+  const code = context?.params?.code ?? null;
   const { initialInvestment, initialWithdrawal, annualIncreasePercent, from, to } = await request.json();
 
   if (!initialInvestment || !initialWithdrawal || annualIncreasePercent === undefined || !from || !to) {
