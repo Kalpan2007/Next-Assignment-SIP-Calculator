@@ -57,7 +57,7 @@ export default function SipCalculator({ code }: { code: string }) {
                                 <input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-full p-2 border-2 rounded-lg mt-1" />
                             </div>
                         </div>
-                        <button type="submit" disabled={loading} className="w-full bg-brand-orange text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+                        <button type="submit" disabled={loading} className="w-full bg-brand-orange text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-brand-orange-hover active:bg-brand-orange-active disabled:bg-brand-orange-disabled transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-orange">
                             {loading ? <Loader2 className="animate-spin" /> : <Calculator size={18} />} Calculate
                         </button>
                     </form>
@@ -65,15 +65,15 @@ export default function SipCalculator({ code }: { code: string }) {
             </div>
             <div className="xl:col-span-3">
                 {loading && <div className="text-center"><Loader2 className="w-12 h-12 animate-spin text-brand-orange" /></div>}
-                {error && <div className="text-red-600 bg-red-100 p-4 rounded-lg">{error}</div>}
+                {error && <div className="text-error bg-red-100 p-4 rounded-lg">{error}</div>}
                 {result && (
                     <div className="space-y-6">
                         <div className="grid grid-cols-2 gap-6">
-                            <div className="bg-white p-6 rounded-xl shadow-lg text-center"><p className="text-sm text-light-text">Total Invested</p><p className="text-2xl font-bold">{formatCurrency(result.totalInvested)}</p></div>
-                            <div className="bg-white p-6 rounded-xl shadow-lg text-center"><p className="text-sm text-light-text">Current Value</p><p className="text-2xl font-bold">{formatCurrency(result.currentValue)}</p></div>
+                            <div className="bg-cream p-6 rounded-xl shadow-lg text-center"><p className="text-sm text-light-text">Total Invested</p><p className="text-2xl font-bold text-dark-text">{formatCurrency(result.totalInvested)}</p></div>
+                            <div className="bg-cream p-6 rounded-xl shadow-lg text-center"><p className="text-sm text-light-text">Current Value</p><p className="text-2xl font-bold text-brand-orange">{formatCurrency(result.currentValue)}</p></div>
                         </div>
-                        <div className="bg-white p-8 rounded-xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-4">Investment Growth</h4>
+                        <div className="bg-gray-100 p-8 rounded-xl shadow-lg">
+                            <h4 className="font-bold text-lg mb-4 text-dark-text">Investment Growth</h4>
                             <div className="h-80"><InvestmentChart data={result.investmentGrowth} /></div>
                         </div>
                     </div>

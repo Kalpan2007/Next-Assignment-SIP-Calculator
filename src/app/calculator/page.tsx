@@ -188,14 +188,14 @@ export default function SipCalculatorPage() {
               <button
                 type="submit"
                 disabled={isCalculating}
-                className="w-full flex items-center justify-center gap-2 bg-orange-500 text-white font-semibold py-3 rounded-md hover:bg-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500"
+                className="w-full flex items-center justify-center gap-2 bg-brand-orange text-white font-semibold py-3 rounded-md hover:bg-brand-orange-hover active:bg-brand-orange-active disabled:bg-brand-orange-disabled transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-orange"
               >
                 {isCalculating ? 'Calculating...' : 'Calculate'}
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="w-auto p-3 text-light-text hover:text-dark-text hover:bg-black/5 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400"
+                className="w-auto p-3 text-dark-text bg-cream border border-border-color rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400"
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
@@ -204,7 +204,7 @@ export default function SipCalculatorPage() {
         </div>
 
         {/* --- Results Section --- */}
-        <div className="bg-dark-text text-cream p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center min-h-[480px]">
+  <div className="bg-gray-100 text-dark-text p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center min-h-[480px]">
           {result ? (
             <div className="w-full text-center">
               <div className="w-full h-64">
